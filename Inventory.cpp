@@ -23,6 +23,7 @@
 # include <string>
 # include <ctime>
 # include <vector>
+# include <iomanip>
 
 using namespace std;
 
@@ -62,10 +63,10 @@ class FoodItem{
 
 // Add Food Item | Done
 // Edit Food Item | Done
-// Delete Food Item 
+// Delete Food Item | Done
 // Search Food Item 
 // Prioritise 
-// DisplayWarnings  
+// DisplayWarnings | Done
 // Display Inventory | Done
 
 class Inventory{
@@ -89,11 +90,40 @@ class Inventory{
 			}
 		}
 		
+		void deleteFoodItems(int index){
+			if(index < items.size() && index >=0){
+				items.erase(items.begin() + index);K
+				
+				cout<<"Successfully Deleted Food Item\n";
+			}else{
+				cout<<"Index is out of Range\n";
+			}
+		}
+		
+		void DisplayWarnings(){
+			cout<<"Warning! These Food items are expired or expiring Soon..."<<endl;	
+			cout<<setw(20)<<left<<"Index"<<setw(20)<<left<<"Name"<<setw(20)<<left<<"Barcode"<<setw(20)<<left<<"Status"<<setw(20)<<left<<"Expiry Date"<<endl;
+			int index = 0;
+			for(auto item: items){
+				if(item.isExpired()){
+					cout<<setw(20)<<left<<index<<setw(20)<<left<<item.name<<setw(20)<<left<<item.barcode
+						<<setw(20)<<left<<"Expired"<<setw(20)<<left<<asctime(localtime(&item.expiryDate))<<endl;
+				}else
+				if(item.isExpiring()){
+					cout<<setw(20)<<left<<index<<setw(20)<<left<<item.name<<setw(20)<<left<<item.barcode
+						<<setw(20)<<left<<"Expiring"<<setw(20)<<left<<asctime(localtime(&item.expiryDate))<<endl;
+				}
+				index++;
+			}
+		}
+		
+		
 		void Display(){
 			cout<<"Our Inventory\n";
-			cout<<"Name-Category-Quantity-Barcode-Expiry Date \n";
+			cout<<setw(20)<<left<<"Name"<<setw(20)<<left<<"Category"<<setw(20)<<left<<"Qunatity"<<setw(20)<<left<<"Barcode"<<setw(20)<<left<<"Expiry Date"<<endl;
 			for(auto item:items){
-				cout<<item.name<<" - "<<item.category<<" - "<<item.quantity<<" - "<< item.barcode<< " - " <<asctime(localtime(&item.expiryDate))<<endl;
+				cout<<setw(20)<<left<<item.name<<setw(20)<<left<<item.category<<setw(20)<<left<<item.quantity
+				    <<setw(20)<<left<<item.barcode<<setw(20)<<left<<asctime(localtime(&item.expiryDate))<<endl;
 			}
 		}
 };
@@ -101,10 +131,80 @@ class Inventory{
 int main(){
 	Inventory inventory;	
 	inventory.addFoodItems("Mangoo", "Fruit", 3, "#b1234" ,time(NULL) + 5*24*60*60);
-	inventory.addFoodItems("Milk", "Diary", 2, "#b1234" , time(NULL) + 2*24*60*60);
+	inventory.addFoodItems("Milk", "Diary", 2, "#b1234" , time(NULL) - 1*24*60*60);
 	inventory.addFoodItems("Banana", "Fruit", 5, "#b1234" , time(NULL) + 7*24*60*60);
-	inventory.Display();
-	cout<<endl;
-	inventory.editFoodItems(7, "Apple", "Fruit", 5, "#b3245", time(NULL) + 6*24*60*60);
-	inventory.Display();
+	
+	bool isExit = false;
+	
+	while(!isExit){
+		cout<<"Menu\n";
+		cout<<" 1) Add Food Items\n";
+		cout<<" 2) Edit Food Items\n";
+		cout<<" 3) Delete Food Items\n";
+		cout<<" 4) Display Warnings\n";
+		cout<<" 5) Display Inventory\n";
+		cout<<" 6) Exit\n";
+		cout<<" Choice : ";
+		
+		int choice;
+		cin>>choice;
+		
+		string name, category, barcode;
+		int quantity, expiryDate, index;
+		switch(choice){
+			case 1:
+				cout<<"Add Food Items\n";
+				cout<<"Enter Name : ";     cin>>name;
+				cout<<"Enter Category : "; cin>>category;
+				cout<<"Enter Barcode : ";
+				cin>>barcode;
+				cout<<"Enter Quantity : ";
+				cin>>quantity;
+				cout<<"Enter ExpiryDate (Number of Days Expiring in) : ";
+				cin>>expiryDate;
+				inventory.addFoodItems(name, category, quantity, barcode, time(NULL) + expiryDate*24*60*60);
+				break;
+			case 2:
+				cout<<"Edit Food Items\n";
+				cout<<"Enter Index : ";    cin>>index;
+				cout<<"Enter Name : ";     cin>>name;
+				cout<<"Enter Category : "; cin>>category;
+				cout<<"Enter Barcode : ";  cin>>barcode;
+				cout<<"Enter Quantity : "; cin>>quantity;
+				cout<<"Enter ExpiryDate (Number of Days Expiring in) : ";
+				cin>>expiryDate;
+				inventory.editFoodItems(index, name, category, quantity, barcode, time(NULL) + expiryDate*24*60*60);
+				break;	
+			case 3:
+			   	cout<<"Deleting Food Item\n";
+			   	cout<<"Enter Index of Food Item to Delete : ";
+			   	cin>>index;
+			   	inventory.deleteFoodItems(index);
+			   	break;
+			case 4:
+				inventory.DisplayWarnings();
+				break;
+			case 5:
+				inventory.Display();
+				break;
+			case 6:
+				isExit = true;
+			default:
+				cout<<"Invalid Option\n";
+		}
+	}
+	
+	
+	
+//	inventory.addFoodItems("Apple", "Fruit", 5, "#b1234" , time(NULL) + 0*24*60*60);
+//	inventory.addFoodItems("Orange", "Fruit", 5, "#b1234" , time(NULL) + 3*24*60*60);
+////	inventory.Display();
+//	cout<<endl;
+//	inventory.DisplayWarnings();
+//	cout<<endl;
+//	int index;
+//	cout<<"Enter index to delete Food Item\n";
+//	cin>>index;
+//	inventory.deleteFoodItems(index);
+//	inventory.Display();
 }
